@@ -3,7 +3,10 @@ package com.passageway;
 import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,6 +21,8 @@ import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
+
+import static com.passageway.R.id.activity_main;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -44,18 +49,34 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
-                    Toast.makeText(MainActivity.this, "Authentication success.",
-                            Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(activity_main), "Authentication Successful", Snackbar.LENGTH_SHORT).show();
                     Log.d("auth", "onAuthStateChanged:signed_in:" + user.getUid());
                 } else {
                     // User is signed out
+                    Snackbar.make(findViewById(activity_main), "Authentication Failed", Snackbar.LENGTH_SHORT).show();
                     Log.d("auth", "onAuthStateChanged:signed_out");
                 }
                 // ...
             }
         };
 
+        createRecyclerView();
 
+    }
+
+    public void createRecyclerView() {
+        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        // specify an adapter
+        //TODO: pass in the field units
+        RecyclerView.Adapter mAdapter = new RecAdapter(this);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override

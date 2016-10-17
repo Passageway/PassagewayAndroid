@@ -10,8 +10,15 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.passageway.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World 2!" />
+
+    <!-- A RecyclerView with some commonly used attributes -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/my_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.MainActivity"
+        tools:listitem="@layout/fieldunit_card"
+        android:clipToPadding="false"
+        android:padding="8dp" />
+
 </RelativeLayout>
