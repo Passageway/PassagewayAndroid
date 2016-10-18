@@ -76,13 +76,15 @@ public class MainActivity extends AppCompatActivity {
                         //login success
                         Log.d("auth", "signInAnonymously:onComplete:" + task.isSuccessful());
                         mDatabase = FirebaseDatabase.getInstance().getReference("units");
-                        mUnits.clear();
+
                         // Read from the database
                         mDatabase.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 // This method is called once with the initial value(s) and again
                                 // whenever data at this location is updated.
+                                mUnits.clear();
+
                                 Map<String, Object> units = (Map<String, Object>) dataSnapshot.getValue();
                                 for (Object unit : units.values()) {
                                     Map<String, Object> attributes = (Map<String, Object>) unit;
@@ -96,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 createRecyclerView();
                             }
-
+                            // Data listener cancelled
                             @Override
                             public void onCancelled(DatabaseError error) {
                                 // Failed to read value
