@@ -32,7 +32,6 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabase;
     private ArrayList<FieldUnit> mUnits;
 
@@ -48,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         }, Manifest.permission.ACCESS_FINE_LOCATION);
 
         mAuth = FirebaseAuth.getInstance();
+        mUnits = new ArrayList<>();
     }
 
     public void createRecyclerView() {
@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
 
         // use a linear layout manager
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // specify an adapter
@@ -77,17 +76,27 @@ public class MainActivity extends AppCompatActivity {
                         //login success
                         Log.d("auth", "signInAnonymously:onComplete:" + task.isSuccessful());
                         mDatabase = FirebaseDatabase.getInstance().getReference("units");
+                        mUnits.clear();
                         // Read from the database
                         mDatabase.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                // This method is called once with the initial value and again
+                                // This method is called once with the initial value(s) and again
                                 // whenever data at this location is updated.
-                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                //mUnits.add()
-                                Log.d("data", "Value is: " + map );
+                                Map<String, Object> units = (Map<String, Object>) dataSnapshot.getValue();
+                                for (Object unit : units.values()) {
+                                    Map<String, Object> attributes = (Map<String, Object>) unit;
+                                    mUnits.add(new FieldUnit(attributes.get("building").toString(),attributes.get("cid").toString(),
+                                            (int)(long) attributes.get("direction"),(int)(long) attributes.get("floor"),
+                                            (double)(long) attributes.get("lat"), (double)(long) attributes.get("lon"),
+                                            attributes.get("name").toString(), attributes.get("wing").toString()));
+                                }
+                                //mUnits.add(
+                                Log.d("data", "Value: " + mUnits.get(0).getName() + " " + mUnits.get(0).getBuilding() + " " + mUnits.get(0).getDirection() + " " + mUnits.get(0).getLat());
+
                                 createRecyclerView();
                             }
+
                             @Override
                             public void onCancelled(DatabaseError error) {
                                 // Failed to read value

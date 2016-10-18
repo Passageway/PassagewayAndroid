@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -33,11 +35,20 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
             View.OnClickListener {
 
         public CardView container;
+        public ImageView status;
+        public TextView unitName;
+        public TextView mac;
+        public TextView coordinates;
+
 
 
         public ViewHolder(Context c, View v) {
             super(v);
             container = (CardView) v.findViewById(R.id.card_view);
+            status = (ImageView) v.findViewById(R.id.online_status);
+            unitName = (TextView) v.findViewById(R.id.unit_name);
+            mac = (TextView) v.findViewById(R.id.mac_address);
+            coordinates = (TextView) v.findViewById(R.id.coordinates);
         }
 
         @Override
@@ -67,12 +78,18 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        FieldUnit unit = mUnits.get(position);
+
+        holder.unitName.setText(unit.getName());
+        holder.mac.setText(unit.getCid());
+        holder.coordinates.setText(unit.getLat() + " " + unit.getLon());
+
         setAnimation(holder.container, position);
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mUnits.size();
     }
 
     /**
