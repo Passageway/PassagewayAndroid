@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import java.util.ArrayList;
+
 /**
  * Recycler View Adapter to display all of the wallpaper categories in a list of cards
  */
@@ -22,6 +24,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
     private int lastSelectedPos = 0;
 
     private MainActivity mActivity;
+    private ArrayList<FieldUnit> mUnits;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -45,7 +48,8 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public RecAdapter(MainActivity activity) {
+    public RecAdapter(ArrayList<FieldUnit> units, MainActivity activity) {
+        mUnits = units;
         mActivity = activity;
     }
 
