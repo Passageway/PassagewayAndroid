@@ -1,8 +1,11 @@
 package com.passageway;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,8 +34,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public class ViewHolder extends RecyclerView.ViewHolder implements
-            View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         public CardView container;
         public ImageView status;
@@ -49,12 +51,17 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
             unitName = (TextView) v.findViewById(R.id.unit_name);
             mac = (TextView) v.findViewById(R.id.mac_address);
             coordinates = (TextView) v.findViewById(R.id.coordinates);
+
+            container.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("IT WAS", "CLICKED");
+                    Intent i = new Intent(mActivity, DetailActivity.class);
+                    mActivity.startActivity(i);
+                }
+            });
         }
 
-        @Override
-        public void onClick(View v) {
-
-        }
 
     }
 
@@ -83,6 +90,10 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
         holder.unitName.setText(unit.getName());
         holder.mac.setText(unit.getCid());
         holder.coordinates.setText(unit.getLat() + " " + unit.getLon());
+        if (holder.coordinates.getText().equals("0.0 0.0"))
+            holder.status.setColorFilter(ContextCompat.getColor(mActivity, R.color.colorOffline));
+        else
+            holder.status.setColorFilter(ContextCompat.getColor(mActivity, R.color.colorOnline));
 
         setAnimation(holder.container, position);
     }
