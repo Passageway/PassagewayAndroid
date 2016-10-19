@@ -2,10 +2,10 @@ package com.passageway;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +30,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
 
     private MainActivity mActivity;
     private ArrayList<FieldUnit> mUnits;
+    private FieldUnit unit;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -42,9 +43,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
         public TextView mac;
         public TextView coordinates;
 
-
-
-        public ViewHolder(Context c, View v) {
+        public ViewHolder(Context c, View v, final FieldUnit unit) {
             super(v);
             container = (CardView) v.findViewById(R.id.card_view);
             status = (ImageView) v.findViewById(R.id.online_status);
@@ -55,8 +54,11 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
             container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("IT WAS", "CLICKED");
+                    //Log.d("IT WAS", "CLICKED");
                     Intent i = new Intent(mActivity, DetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("FieldUnit", unit);
+                    i.putExtras(bundle);
                     mActivity.startActivity(i);
                 }
             });
@@ -79,13 +81,13 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
         View v = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.fieldunit_card, parent, false);
         // set the view's size, margins, paddings and layout parameters
-        return new ViewHolder(parent.getContext(), v);
+        return new ViewHolder(parent.getContext(), v, unit);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        FieldUnit unit = mUnits.get(position);
+        unit = mUnits.get(position);
 
         holder.unitName.setText(unit.getName());
         holder.mac.setText(unit.getCid());

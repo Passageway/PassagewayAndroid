@@ -1,10 +1,12 @@
 package com.passageway;
 
+import java.io.Serializable;
+
 /**
  * Created by chadt on 10/17/2016.
  */
 
-public class FieldUnit {
+public class FieldUnit implements Serializable {
     private String building;
     private String cid;
     private int direction;
