@@ -1,12 +1,14 @@
 package com.passageway;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -60,8 +62,21 @@ public class MainActivity extends AppCompatActivity {
 
         // specify an adapter
         //TODO: pass in the field units
-        RecyclerView.Adapter mAdapter = new RecAdapter(mUnits, this);
+        final RecyclerView.Adapter mAdapter = new RecAdapter(mUnits, this);
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(this, mRecyclerView,
+                    new RecyclerItemClickListener.OnItemClickListener(){
+                        @Override
+                        public void onItemClick(View view, int position){
+                            configureIntent(mAdapter.getPositionInfo(position));
+                        }
+                        @Override
+                        public void onItemLongClick(View view, int position) {
+
+                        }
+
+                    }));
     }
 
     @Override
@@ -115,5 +130,13 @@ public class MainActivity extends AppCompatActivity {
                         // ...
                     }
                 });
+    }
+
+    public void configureDetailIntent(FieldUnit unit) {
+        Intent i = new Intent(this, DetailActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("FieldUnit", unit);
+        i.putExtras(bundle);
+        this.startActivity(i);
     }
 }
