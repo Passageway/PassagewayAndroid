@@ -43,12 +43,12 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <TextView
-            android:id="@+id/coordinates"
+            android:id="@+id/ip_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/mac_address"
             android:layout_toEndOf="@id/online_status"
-            android:text="40.00, 40.00"
+            android:text="127.0.0.1"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
     </RelativeLayout>
 </android.support.v7.widget.CardView>

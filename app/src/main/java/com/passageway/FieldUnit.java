@@ -3,12 +3,13 @@ package com.passageway;
 import java.io.Serializable;
 
 /**
- * Created by chadt on 10/17/2016.
+ * Field Unit.
+ * Represents all the data associated with each unit for the project.
  */
-
 public class FieldUnit implements Serializable {
     private String building;
     private String cid;
+    private String ip;
     private int direction;
     private int floor;
     private double lat;
@@ -16,9 +17,10 @@ public class FieldUnit implements Serializable {
     private String name;
     private String wing;
 
-    public FieldUnit(String building, String cid, int direction, int floor, double lat, double lon, String name, String wing){
+    public FieldUnit(String building, String cid, String ip, int direction, int floor, double lat, double lon, String name, String wing) {
         this.building = building;
         this.cid = cid;
+        this.ip = ip;
         this.direction = direction;
         this.floor = floor;
         this.lat = lat;
@@ -50,6 +52,14 @@ public class FieldUnit implements Serializable {
 
     public void setCid(String cid) {
         this.cid = cid;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     public int getDirection() {

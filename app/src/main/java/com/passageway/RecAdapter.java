@@ -43,7 +43,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
         public ImageView status;
         public TextView unitName;
         public TextView mac;
-        public TextView coordinates;
+        public TextView ip;
 
         public ViewHolder(Context c, View v) {
             super(v);
@@ -51,7 +51,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
             status = (ImageView) v.findViewById(R.id.online_status);
             unitName = (TextView) v.findViewById(R.id.unit_name);
             mac = (TextView) v.findViewById(R.id.mac_address);
-            coordinates = (TextView) v.findViewById(R.id.coordinates);
+            ip = (TextView) v.findViewById(R.id.ip_address);
         }
 
 
@@ -81,8 +81,8 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
 
         holder.unitName.setText(unit.getName());
         holder.mac.setText(unit.getCid());
-        holder.coordinates.setText(unit.getLat() + " " + unit.getLon());
-        if (holder.coordinates.getText().equals("0.0 0.0"))
+        holder.ip.setText(unit.getIp());
+        if (unit.getLat() == 0.0 && unit.getLon() == 0.0)
             holder.status.setColorFilter(ContextCompat.getColor(mActivity, R.color.colorOffline));
         else
             holder.status.setColorFilter(ContextCompat.getColor(mActivity, R.color.colorOnline));

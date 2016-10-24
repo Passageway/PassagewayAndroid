@@ -104,10 +104,15 @@ public class MainActivity extends AppCompatActivity {
                                 Map<String, Object> units = (Map<String, Object>) dataSnapshot.getValue();
                                 for (Object unit : units.values()) {
                                     Map<String, Object> attributes = (Map<String, Object>) unit;
-                                    mUnits.add(new FieldUnit(attributes.get("building").toString(),attributes.get("cid").toString(),
-                                            (int)(long) attributes.get("direction"),(int)(long) attributes.get("floor"),
-                                            (double)(long) attributes.get("lat"), (double)(long) attributes.get("lon"),
-                                            attributes.get("name").toString(), attributes.get("wing").toString()));
+                                    mUnits.add(new FieldUnit(attributes.get("building").toString(),
+                                            Utils.formatMAC(attributes.get("cid").toString()),
+                                            attributes.get("ip").toString(),
+                                            (int) (long) attributes.get("direction"),
+                                            (int) (long) attributes.get("floor"),
+                                            (double) (long) attributes.get("lat"),
+                                            (double) (long) attributes.get("lon"),
+                                            attributes.get("name").toString(),
+                                            attributes.get("wing").toString()));
                                 }
                                 //mUnits.add(
                                 Log.d("data", "Value: " + mUnits.get(0).getName() + " " + mUnits.get(0).getBuilding() + " " + mUnits.get(0).getDirection() + " " + mUnits.get(0).getLat());

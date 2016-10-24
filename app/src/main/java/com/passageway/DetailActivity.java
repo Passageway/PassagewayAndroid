@@ -40,16 +40,18 @@ public class DetailActivity extends AppCompatActivity {
         EditText floor = (EditText) findViewById(R.id.input_floor);
         EditText wing = (EditText) findViewById(R.id.input_wing);
         EditText mac = (EditText) findViewById(R.id.input_mac);
+        EditText ip = (EditText) findViewById(R.id.input_ip);
         EditText lat = (EditText) findViewById(R.id.input_lat);
         EditText lon = (EditText) findViewById(R.id.input_long);
 
         name.setText(unit.getName());
         building.setText(unit.getBuilding());
-        //floor.setText(unit.getFloor());
+        floor.setText(Integer.toString(unit.getFloor()));
         wing.setText(unit.getWing());
         mac.setText(unit.getCid());
-        //lat.setText(unit.getLat());
-        //lon.setText(unit.getLon());
+        ip.setText(unit.getIp());
+        lat.setText(Double.toString(unit.getLat()));
+        lon.setText(Double.toString(unit.getLon()));
     }
 
 }

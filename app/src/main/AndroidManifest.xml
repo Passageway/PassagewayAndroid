@@ -20,7 +20,8 @@
         </activity>
         <activity
             android:name=".DetailActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:label="Edit Unit">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.passageway.MainActivity" />
