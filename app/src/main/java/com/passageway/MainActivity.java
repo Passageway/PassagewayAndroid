@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private ArrayList<FieldUnit> mUnits;
+    private RecAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         // specify an adapter
         //TODO: pass in the field units
-        final RecyclerView.Adapter mAdapter = new RecAdapter(mUnits, this);
+        mAdapter = new RecAdapter(mUnits, this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, mRecyclerView,
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void configureDetailIntent(FieldUnit unit) {
+    public void configureIntent(FieldUnit unit) {
         Intent i = new Intent(this, DetailActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("FieldUnit", unit);

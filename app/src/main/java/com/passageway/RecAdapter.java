@@ -28,6 +28,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
 
     private MainActivity mActivity;
     private ArrayList<FieldUnit> mUnits;
+    private FieldUnit unit;
 
     public FieldUnit getPositionInfo(int position) {
         return mUnits.get(position);
@@ -43,8 +44,6 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
         public TextView unitName;
         public TextView mac;
         public TextView coordinates;
-
-
 
         public ViewHolder(Context c, View v) {
             super(v);
@@ -78,7 +77,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        FieldUnit unit = mUnits.get(position);
+        unit = mUnits.get(position);
 
         holder.unitName.setText(unit.getName());
         holder.mac.setText(unit.getCid());
