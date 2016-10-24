@@ -120,11 +120,39 @@
                     android:enabled="false" />
             </android.support.design.widget.TextInputLayout>
 
+            <TextView
+                android:id="@+id/radioTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/input_layout_mac"
+                android:text=" Orientation"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+            <RadioGroup
+                android:id="@+id/radioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/radioTitle"
+                android:orientation="horizontal"
+                android:paddingBottom="8dp">
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/default_direction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Default" />
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Alternative" />
+            </RadioGroup>
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/input_layout_lat"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/input_layout_mac">
+                android:layout_below="@id/radioGroup">
 
                 <EditText
                     android:id="@+id/input_lat"
@@ -139,7 +167,7 @@
                 android:id="@+id/input_layout_long"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/input_layout_mac"
+                android:layout_below="@id/radioGroup"
                 android:layout_toRightOf="@id/input_layout_lat">
 
                 <EditText
