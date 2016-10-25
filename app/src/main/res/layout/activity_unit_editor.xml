@@ -143,6 +143,7 @@
                     android:text="Default" />
 
                 <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/alt_direction"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Alternative" />
