@@ -101,10 +101,19 @@ public class MainActivity extends AppCompatActivity {
                                 // whenever data at this location is updated.
                                 mUnits.clear();
 
+//                                Map<String, String> map = ...
+//                                for (Map.Entry<String, String> entry : map.entrySet())
+//                                {
+//                                    System.out.println(entry.getKey() + "/" + entry.getValue());
+//                                }
+
                                 Map<String, Object> units = (Map<String, Object>) dataSnapshot.getValue();
-                                for (Object unit : units.values()) {
-                                    Map<String, Object> attributes = (Map<String, Object>) unit;
-                                    mUnits.add(new FieldUnit(attributes.get("building").toString(),
+                                Log.d("units", units.toString());
+                                for (Map.Entry<String, Object> unit : units.entrySet()) {
+                                    Map<String, Object> attributes = (Map<String, Object>) unit.getValue();
+                                    //Log.d("IDONFSD", unit.getKey());
+                                    mUnits.add(new FieldUnit(unit.getKey(),
+                                            attributes.get("building").toString(),
                                             Utils.formatMAC(attributes.get("cid").toString()),
                                             attributes.get("ip").toString(),
                                             (int) (long) attributes.get("direction"),
