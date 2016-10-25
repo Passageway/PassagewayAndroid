@@ -44,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Dexter.checkPermission(new PermissionListener() {
-            @Override public void onPermissionGranted(PermissionGrantedResponse response) {/* ... */}
+            @Override public void onPermissionGranted(PermissionGrantedResponse response) {
+                Log.d("Permission", "Granted");
+            }
             @Override public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
             @Override public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
         }, Manifest.permission.ACCESS_FINE_LOCATION);
