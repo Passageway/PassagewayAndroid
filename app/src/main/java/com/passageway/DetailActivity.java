@@ -1,5 +1,6 @@
 package com.passageway;
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -19,6 +20,11 @@ import android.widget.RadioGroup;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -26,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DetailActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
 
     private FieldUnit unit;
     private Location mLastLocation;
@@ -41,6 +47,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     EditText lon;
     RadioGroup dirGroup;
     DatabaseReference mDatabase;
+    MapFragment mMapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +64,12 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         lon = (EditText) findViewById(R.id.input_long);
         dirGroup = (RadioGroup) findViewById(R.id.radioGroup);
 
+        mMapFragment = MapFragment.newInstance();
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.map, mMapFragment);
+        fragmentTransaction.commit();
+        mMapFragment.getMapAsync(this);
+
         mDatabase = FirebaseDatabase.getInstance().getReference("units");
 
         Intent intent = this.getIntent();
@@ -67,7 +80,6 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
             setFormValues(unit);
 
         // Create an instance of GoogleAPIClient.
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -180,5 +192,10 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(42.9309543, -85.8301859),(float)19.0));
     }
 }
