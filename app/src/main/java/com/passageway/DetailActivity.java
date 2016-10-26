@@ -21,12 +21,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DetailActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -83,23 +80,11 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
             @Override
             public void onClick(View view) {
 
-                Snackbar.make(view, "Attributes saved to Firebase", Snackbar.LENGTH_LONG).show();
-                Dexter.checkPermission(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        Log.d("Permission", "Permission Granted");
-                        mGoogleApiClient.connect();
-                    }
-
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
-                }, android.Manifest.permission.ACCESS_FINE_LOCATION);
-
-                pushDataToFirebase();
-                Snackbar.make(view, "Attributes saved to Firebase" + unit.getKey(), Snackbar.LENGTH_LONG).show();
+                if (pushDataToFirebase(unit.getKey())) {
+                    Snackbar.make(view, "Attributes saved to Firebase", Snackbar.LENGTH_LONG).show();
+                } else {
+                    Snackbar.make(view, "Error saving to Firebase", Snackbar.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -108,29 +93,27 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
             @Override
             public void onClick(View view) {
 
-                Snackbar.make(view, "Attributes saved to Firebase", Snackbar.LENGTH_LONG).show();
-                Dexter.checkPermission(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        Log.d("Permission", "Permission Granted");
-                        mGoogleApiClient.connect();
-                    }
-
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
-                }, android.Manifest.permission.ACCESS_FINE_LOCATION);
-
-                pushDataToFirebase();
-                Snackbar.make(view, "Attributes saved to Firebase" + unit.getKey(), Snackbar.LENGTH_LONG).show();
             }
         });
     }
 
-    private void pushDataToFirebase() {
-        //TODO: Fill this out
+    private boolean pushDataToFirebase(String id) {
+        Map<String, Object> values = new HashMap<String, Object>();
+        DatabaseReference fu = mDatabase.child(id);
+
+        values.put("building", building.getText().toString());
+        values.put("floor", Integer.parseInt(floor.getText().toString()));
+        values.put("wing", wing.getText().toString());
+        values.put("name", name.getText().toString());
+        values.put("lat", Double.parseDouble(lat.getText().toString()));
+        values.put("lon", Double.parseDouble(lon.getText().toString()));
+
+        if (dirGroup.getCheckedRadioButtonId() == R.id.default_direction)
+            values.put("direction", 0);
+        else
+            values.put("direction", 1);
+        fu.updateChildren(values);
+        return true;
     }
 
     private void setFormValues(FieldUnit unit) {
