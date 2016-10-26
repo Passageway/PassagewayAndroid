@@ -88,11 +88,13 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
             @Override
             public void onPermissionDenied(PermissionDeniedResponse response) {
                 Log.d("Permission", "Permission Denied");
-                //Dexter.continuePendingRequestIfPossible(this);
             }
 
             @Override
-            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
+            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                Log.d("Permission", "Request Cancelled");
+                token.continuePermissionRequest();
+            }
         };
 
         mDatabase = FirebaseDatabase.getInstance().getReference("units");
@@ -193,11 +195,9 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
                     Log.d("Permission", "Permission Not Granted. Asking User");
 
                     if(Dexter.isRequestOngoing()){
-                        Dexter.continuePendingRequestIfPossible(mPermissionListener);
                         return;
                     }
                     Dexter.checkPermission(mPermissionListener, android.Manifest.permission.ACCESS_FINE_LOCATION);
-
                     return;
                 }
 
