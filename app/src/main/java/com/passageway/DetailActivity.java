@@ -25,6 +25,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.karumi.dexter.Dexter;
@@ -44,6 +46,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private PermissionListener mPermissionListener;
+    private GoogleMap mGoogleMap;
     FloatingActionButton fabLocation;
     EditText name;
     EditText building;
@@ -204,7 +207,18 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
                 mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
                 if (mLastLocation != null) {
                     Log.d("Permission","Lat: " + String.valueOf(mLastLocation.getLatitude()));
+                    lat.setText(String.valueOf(mLastLocation.getLatitude()));
                     Log.d("Permission","Lon: " + String.valueOf(mLastLocation.getLongitude()));
+                    lon.setText(String.valueOf(mLastLocation.getLongitude()));
+                }
+                LatLng mLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+
+                //zoom map and add marker
+                if (mGoogleMap != null) {
+                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, Float.parseFloat(getResources().getString(R.string.map_zoom))));
+                    mGoogleMap.clear(); //clear any existing markers
+                    Marker mMarker = mGoogleMap.addMarker(new MarkerOptions().position(mLatLng).title(name.getText().toString()));
+                    mMarker.showInfoWindow();
                 }
             }
         });
@@ -222,6 +236,11 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(42.9309543, -85.8301859),(float)19.0));
+        mGoogleMap = googleMap;
+
+        LatLng mLatLng = new LatLng(Double.parseDouble(lat.getText().toString()), Double.parseDouble(lon.getText().toString()));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, Float.parseFloat(getResources().getString(R.string.map_zoom))));
+        Marker mMarker = mGoogleMap.addMarker(new MarkerOptions().position(mLatLng).title(name.getText().toString()));
+        mMarker.showInfoWindow();
     }
 }

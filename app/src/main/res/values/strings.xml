@@ -3,4 +3,5 @@
     <string name="title_activity_detail">DetailActivity</string>
     <string name="ip_address">IP Address</string>
     <string name="mac_address">MAC Address</string>
+    <string name="map_zoom">18</string>
 </resources>
