@@ -118,7 +118,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
             @Override
             public void onClick(View view) {
                 pushDataToFirebase(unit.getKey());
-                Snackbar.make(view, "Attributes saved to Firebase" + unit.getKey(), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(view, "Attributes saved to Firebase", Snackbar.LENGTH_LONG).show();
             }
         });
 
