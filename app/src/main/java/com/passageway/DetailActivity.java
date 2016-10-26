@@ -16,12 +16,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -81,6 +80,31 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Snackbar.make(view, "Attributes saved to Firebase", Snackbar.LENGTH_LONG).show();
+                Dexter.checkPermission(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        Log.d("Permission", "Permission Granted");
+                        mGoogleApiClient.connect();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
+                }, android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+                pushDataToFirebase();
+                Snackbar.make(view, "Attributes saved to Firebase" + unit.getKey(), Snackbar.LENGTH_LONG).show();
+            }
+        });
+
+        FloatingActionButton fabLocation = (FloatingActionButton) findViewById(R.id.fab_location);
+        fabLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
