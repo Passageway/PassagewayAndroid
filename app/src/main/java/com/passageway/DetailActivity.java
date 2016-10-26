@@ -114,6 +114,31 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
                 Snackbar.make(view, "Attributes saved to Firebase" + unit.getKey(), Snackbar.LENGTH_LONG).show();
             }
         });
+
+        FloatingActionButton fabLocation = (FloatingActionButton) findViewById(R.id.fab_location);
+        fabLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Snackbar.make(view, "Attributes saved to Firebase", Snackbar.LENGTH_LONG).show();
+                Dexter.checkPermission(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        Log.d("Permission", "Permission Granted");
+                        mGoogleApiClient.connect();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
+                }, android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+                pushDataToFirebase();
+                Snackbar.make(view, "Attributes saved to Firebase" + unit.getKey(), Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void pushDataToFirebase() {
