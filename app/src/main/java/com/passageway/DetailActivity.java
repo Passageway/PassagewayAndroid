@@ -40,6 +40,8 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     private FieldUnit unit;
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
+    private PermissionListener mPermissionListener;
+    FloatingActionButton fabLocation;
     EditText name;
     EditText building;
     EditText floor;
@@ -73,6 +75,23 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         fragmentTransaction.commit();
         mMapFragment.getMapAsync(this);
 
+        mPermissionListener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted(PermissionGrantedResponse response) {
+                Log.d("Permission", "Permission Granted");
+                fabLocation.callOnClick();
+            }
+
+            @Override
+            public void onPermissionDenied(PermissionDeniedResponse response) {
+                Log.d("Permission", "Permission Denied");
+                //Dexter.continuePendingRequestIfPossible(this);
+            }
+
+            @Override
+            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
+        };
+
         mDatabase = FirebaseDatabase.getInstance().getReference("units");
 
         Intent intent = this.getIntent();
@@ -88,57 +107,20 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+        mGoogleApiClient.connect();
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fabSave = (FloatingActionButton) findViewById(R.id.fab);
+        fabSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Snackbar.make(view, "Attributes saved to Firebase", Snackbar.LENGTH_LONG).show();
-                Dexter.checkPermission(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        Log.d("Permission", "Permission Granted");
-                        mGoogleApiClient.connect();
-                    }
-
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
-                }, android.Manifest.permission.ACCESS_FINE_LOCATION);
-
                 pushDataToFirebase();
                 Snackbar.make(view, "Attributes saved to Firebase" + unit.getKey(), Snackbar.LENGTH_LONG).show();
             }
         });
 
-        FloatingActionButton fabLocation = (FloatingActionButton) findViewById(R.id.fab_location);
-        fabLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        fabLocation = (FloatingActionButton) findViewById(R.id.fab_location);
 
-                Snackbar.make(view, "Attributes saved to Firebase", Snackbar.LENGTH_LONG).show();
-                Dexter.checkPermission(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        Log.d("Permission", "Permission Granted");
-                        mGoogleApiClient.connect();
-                    }
-
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
-                }, android.Manifest.permission.ACCESS_FINE_LOCATION);
-
-                pushDataToFirebase();
-                Snackbar.make(view, "Attributes saved to Firebase" + unit.getKey(), Snackbar.LENGTH_LONG).show();
-            }
-        });
     }
 
     private void pushDataToFirebase() {
@@ -184,21 +166,30 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-            Log.d("Permission","Lat: " + String.valueOf(mLastLocation.getLatitude()));
-            Log.d("Permission","Lon: " + String.valueOf(mLastLocation.getLongitude()));
-        }
+        //fabLocation.setVisibility(View.VISIBLE);
+        fabLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    Log.d("Permission", "Permission Not Granted. Asking User");
+
+                    if(Dexter.isRequestOngoing()){
+                        Dexter.continuePendingRequestIfPossible(mPermissionListener);
+                        return;
+                    }
+                    Dexter.checkPermission(mPermissionListener, android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+                    return;
+                }
+
+                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                if (mLastLocation != null) {
+                    Log.d("Permission","Lat: " + String.valueOf(mLastLocation.getLatitude()));
+                    Log.d("Permission","Lon: " + String.valueOf(mLastLocation.getLongitude()));
+                }
+            }
+        });
     }
 
     @Override

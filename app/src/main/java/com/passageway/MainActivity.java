@@ -1,6 +1,5 @@
 package com.passageway;
 
-import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,12 +19,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -42,15 +35,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Dexter.checkPermission(new PermissionListener() {
-            @Override public void onPermissionGranted(PermissionGrantedResponse response) {
-                Log.d("Permission", "Granted");
-            }
-            @Override public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
-            @Override public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
-        }, Manifest.permission.ACCESS_FINE_LOCATION);
-
         mAuth = FirebaseAuth.getInstance();
         mUnits = new ArrayList<>();
     }
@@ -120,8 +104,8 @@ public class MainActivity extends AppCompatActivity {
                                             attributes.get("ip").toString(),
                                             (int) (long) attributes.get("direction"),
                                             (int) (long) attributes.get("floor"),
-                                            (double) (long) attributes.get("lat"),
-                                            (double) (long) attributes.get("lon"),
+                                            (double) attributes.get("lat"),
+                                            (double) attributes.get("lon"),
                                             attributes.get("name").toString(),
                                             attributes.get("wing").toString()));
                                 }
