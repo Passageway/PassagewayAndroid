@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // specify an adapter
-        //TODO: pass in the field units
         mAdapter = new RecAdapter(mUnits, this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnItemTouchListener(
@@ -87,17 +86,10 @@ public class MainActivity extends AppCompatActivity {
                                 // whenever data at this location is updated.
                                 mUnits.clear();
 
-//                                Map<String, String> map = ...
-//                                for (Map.Entry<String, String> entry : map.entrySet())
-//                                {
-//                                    System.out.println(entry.getKey() + "/" + entry.getValue());
-//                                }
-
                                 Map<String, Object> units = (Map<String, Object>) dataSnapshot.getValue();
                                 Log.d("units", units.toString());
                                 for (Map.Entry<String, Object> unit : units.entrySet()) {
                                     Map<String, Object> attributes = (Map<String, Object>) unit.getValue();
-                                    //Log.d("IDONFSD", unit.getKey());
                                     mUnits.add(new FieldUnit(unit.getKey(),
                                             attributes.get("building").toString(),
                                             Utils.formatMAC(attributes.get("cid").toString()),
@@ -109,9 +101,7 @@ public class MainActivity extends AppCompatActivity {
                                             attributes.get("name").toString(),
                                             attributes.get("wing").toString()));
                                 }
-                                //mUnits.add(
                                 Log.d("data", "Value: " + mUnits.get(0).getName() + " " + mUnits.get(0).getBuilding() + " " + mUnits.get(0).getDirection() + " " + mUnits.get(0).getLat());
-
                                 createRecyclerView();
                             }
                             // Data listener cancelled
@@ -128,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
-                        // ...
                     }
                 });
     }
