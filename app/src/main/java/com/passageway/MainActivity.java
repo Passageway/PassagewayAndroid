@@ -104,8 +104,8 @@ public class MainActivity extends AppCompatActivity {
                                             attributes.get("ip").toString(),
                                             (int) (long) attributes.get("direction"),
                                             (int) (long) attributes.get("floor"),
-                                            (double) attributes.get("lat"),
-                                            (double) attributes.get("lon"),
+                                            Double.parseDouble(attributes.get("lat").toString()),
+                                            Double.parseDouble(attributes.get("lon").toString()),
                                             attributes.get("name").toString(),
                                             attributes.get("wing").toString()));
                                 }
