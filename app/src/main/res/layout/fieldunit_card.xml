@@ -14,21 +14,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
+        <View
             android:id="@+id/online_status"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:tint="@color/colorOffline"
-            android:src="@drawable/circle" />
+            android:background="@color/colorOffline" />
 
         <TextView
             android:id="@+id/unit_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="20dp"
             android:layout_toEndOf="@id/online_status"
             android:text="Name of the Unit"
             android:textAppearance="@style/TextAppearance.AppCompat.Title" />

@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public CardView container;
-        public ImageView status;
+        public View status;
         public TextView unitName;
         public TextView mac;
         public TextView ip;
@@ -48,7 +47,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
         public ViewHolder(Context c, View v) {
             super(v);
             container = (CardView) v.findViewById(R.id.card_view);
-            status = (ImageView) v.findViewById(R.id.online_status);
+            status = v.findViewById(R.id.online_status);
             unitName = (TextView) v.findViewById(R.id.unit_name);
             mac = (TextView) v.findViewById(R.id.mac_address);
             ip = (TextView) v.findViewById(R.id.ip_address);
@@ -83,9 +82,9 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
         holder.mac.setText(unit.getCid());
         holder.ip.setText(unit.getIp());
         if (unit.getLat() == 0.0 && unit.getLon() == 0.0)
-            holder.status.setColorFilter(ContextCompat.getColor(mActivity, R.color.colorOffline));
+            holder.status.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.colorOffline));
         else
-            holder.status.setColorFilter(ContextCompat.getColor(mActivity, R.color.colorOnline));
+            holder.status.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.colorOnline));
 
         setAnimation(holder.container, position);
     }
