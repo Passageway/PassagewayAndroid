@@ -2,6 +2,7 @@ package com.passageway;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -18,9 +19,16 @@ import android.widget.RadioGroup;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -42,6 +50,8 @@ import java.util.Map;
 
 public class DetailActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerDragListener {
+
+    private final int REQUEST_CHECK_SETTINGS = 9001;
 
     private FieldUnit unit;
     //private Location mLastLocation;
@@ -174,9 +184,75 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         if (mGoogleMap != null) {
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pLatLng, Float.parseFloat(getResources().getString(R.string.map_zoom))));
             mGoogleMap.clear(); //clear any existing markers
-            Marker mMarker = mGoogleMap.addMarker(new MarkerOptions().position(pLatLng).title(name.getText().toString()));
+            Marker mMarker = mGoogleMap.addMarker(new MarkerOptions().position(pLatLng).title(name.getText().toString()).draggable(true));
             //mMarker.showInfoWindow();
-            mMarker.setDraggable(true);
+        }
+    }
+
+    private void turnOnLocation(){
+
+        LocationRequest mLocationRequestHighAccuracy = new LocationRequest();
+        mLocationRequestHighAccuracy.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequestHighAccuracy);
+
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
+
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                final LocationSettingsStates states = result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can initialize location requests here.
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied. But could be fixed by showing the user a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(), and check the result in onActivityResult().
+                            status.startResolutionForResult(
+                                    DetailActivity.this,
+                                    REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way to fix the settings so we won't show the dialog.
+                        break;
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        switch (requestCode)
+        {
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode)
+                {
+                    case RESULT_OK:
+                    {
+                        // All required changes were successfully made. Location enabled by user
+                        fabLocation.callOnClick();
+                        break;
+                    }
+                    case RESULT_CANCELED:
+                    {
+                        // The user was asked to change settings, but chose not to. Location not enabled by user
+                        break;
+                    }
+                    default:
+                    {
+                        break;
+                    }
+                }
+                break;
         }
     }
 
@@ -184,10 +260,12 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     public void onLocationChanged(Location location) {
         //Log.d("Permission","Lat: " + String.valueOf(location.getLatitude()));
         //Log.d("Permission","Lon: " + String.valueOf(location.getLongitude()));
-        LatLng mLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-        updateLocation(mLatLng);
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-    }
+        if(location.getAccuracy() < 10) {
+            LatLng mLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+            updateLocation(mLatLng);
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+        }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -208,9 +286,11 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
 
                 LocationRequest mLocationRequest = LocationRequest.create();
                 mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                mLocationRequest.setInterval(0);
-                mLocationRequest.setFastestInterval(0);
+                mLocationRequest.setInterval(500);
+                mLocationRequest.setFastestInterval(100);
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, DetailActivity.this);
+
+                turnOnLocation();
             }
         });
     }
@@ -228,6 +308,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mGoogleMap.setOnMarkerDragListener(this);
         LatLng mLatLng = new LatLng(Double.parseDouble(lat.getText().toString()), Double.parseDouble(lon.getText().toString()));
         updateLocation(mLatLng);
     }
@@ -244,6 +325,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
+        Log.d("Drag", "Drag End");
         updateLocation(marker.getPosition());
     }
 }
