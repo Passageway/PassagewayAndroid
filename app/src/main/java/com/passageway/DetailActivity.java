@@ -4,7 +4,6 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +18,8 @@ import android.widget.RadioGroup;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -40,25 +41,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DetailActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
+        GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerDragListener {
 
     private FieldUnit unit;
-    private Location mLastLocation;
+    //private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private PermissionListener mPermissionListener;
     private GoogleMap mGoogleMap;
-    FloatingActionButton fabLocation;
-    EditText name;
-    EditText building;
-    EditText floor;
-    EditText wing;
-    EditText mac;
-    EditText ip;
-    EditText lat;
-    EditText lon;
-    RadioGroup dirGroup;
-    DatabaseReference mDatabase;
-    MapFragment mMapFragment;
+    private FloatingActionButton fabLocation;
+    private EditText name;
+    private EditText building;
+    private EditText floor;
+    private EditText wing;
+    private EditText mac;
+    private EditText ip;
+    private EditText lat;
+    private EditText lon;
+    private RadioGroup dirGroup;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +75,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         lon = (EditText) findViewById(R.id.input_long);
         dirGroup = (RadioGroup) findViewById(R.id.radioGroup);
 
-        mMapFragment = MapFragment.newInstance();
+        MapFragment mMapFragment = MapFragment.newInstance();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.map, mMapFragment);
         fragmentTransaction.commit();
@@ -167,24 +167,26 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         lon.setText(Double.toString(unit.getLon()));
     }
 
+    private void updateLocation(LatLng pLatLng){
+        lat.setText(String.valueOf(pLatLng.latitude));
+        lon.setText(String.valueOf(pLatLng.longitude));
+        //zoom map and add marker
+        if (mGoogleMap != null) {
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pLatLng, Float.parseFloat(getResources().getString(R.string.map_zoom))));
+            mGoogleMap.clear(); //clear any existing markers
+            Marker mMarker = mGoogleMap.addMarker(new MarkerOptions().position(pLatLng).title(name.getText().toString()));
+            //mMarker.showInfoWindow();
+            mMarker.setDraggable(true);
+        }
+    }
+
     @Override
     public void onLocationChanged(Location location) {
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
+        //Log.d("Permission","Lat: " + String.valueOf(location.getLatitude()));
+        //Log.d("Permission","Lon: " + String.valueOf(location.getLongitude()));
+        LatLng mLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+        updateLocation(mLatLng);
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
     @Override
@@ -204,22 +206,11 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
                     return;
                 }
 
-                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-                if (mLastLocation != null) {
-                    Log.d("Permission","Lat: " + String.valueOf(mLastLocation.getLatitude()));
-                    lat.setText(String.valueOf(mLastLocation.getLatitude()));
-                    Log.d("Permission","Lon: " + String.valueOf(mLastLocation.getLongitude()));
-                    lon.setText(String.valueOf(mLastLocation.getLongitude()));
-                }
-                LatLng mLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-
-                //zoom map and add marker
-                if (mGoogleMap != null) {
-                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, Float.parseFloat(getResources().getString(R.string.map_zoom))));
-                    mGoogleMap.clear(); //clear any existing markers
-                    Marker mMarker = mGoogleMap.addMarker(new MarkerOptions().position(mLatLng).title(name.getText().toString()));
-                    mMarker.showInfoWindow();
-                }
+                LocationRequest mLocationRequest = LocationRequest.create();
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                mLocationRequest.setInterval(0);
+                mLocationRequest.setFastestInterval(0);
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, DetailActivity.this);
             }
         });
     }
@@ -237,10 +228,22 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
-
         LatLng mLatLng = new LatLng(Double.parseDouble(lat.getText().toString()), Double.parseDouble(lon.getText().toString()));
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, Float.parseFloat(getResources().getString(R.string.map_zoom))));
-        Marker mMarker = mGoogleMap.addMarker(new MarkerOptions().position(mLatLng).title(name.getText().toString()));
-        mMarker.showInfoWindow();
+        updateLocation(mLatLng);
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        updateLocation(marker.getPosition());
     }
 }
