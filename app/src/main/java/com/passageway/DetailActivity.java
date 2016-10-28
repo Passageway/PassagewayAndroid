@@ -160,7 +160,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
                 if (getCurrentFocus() != null &&
                         getCurrentFocus().getClass() == AppCompatEditText.class) {
                     fabSave.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.cardview_light_background));
-                    fabSave.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.colorPrimary));
+                    fabSave.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.colorAccent));
                 }
             }
 
@@ -310,9 +310,9 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
             mLocationCount = 0;
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             fabLocation.setColorFilter(ContextCompat.getColor(this, R.color.cardview_light_background));
-            fabLocation.setBackgroundTintList(ContextCompat.getColorStateList(this,R.color.colorPrimary));
+            fabLocation.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorAccent));
             fabSave.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.cardview_light_background));
-            fabSave.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.colorPrimary));
+            fabSave.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.colorAccent));
         }
     }
 
