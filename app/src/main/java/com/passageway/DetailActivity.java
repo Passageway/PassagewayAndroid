@@ -13,6 +13,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatEditText;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -61,18 +64,13 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     private GoogleApiClient mGoogleApiClient;
     private PermissionListener mPermissionListener;
     private GoogleMap mGoogleMap;
-    private FloatingActionButton fabLocation;
-    private EditText name;
-    private EditText building;
-    private EditText floor;
-    private EditText wing;
-    private EditText mac;
-    private EditText ip;
-    private EditText lat;
-    private EditText lon;
+    private FloatingActionButton fabLocation, fabSave;
+    private EditText name, building, floor, wing, mac, ip, lat, lon;
     private ProgressBar mProgressBar;
     private RadioGroup dirGroup;
     private DatabaseReference mDatabase;
+    private EditText[] fields;
+    private TextWatcher textWatcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +133,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         mGoogleApiClient.connect();
 
 
-        FloatingActionButton fabSave = (FloatingActionButton) findViewById(R.id.fab);
+        fabSave = (FloatingActionButton) findViewById(R.id.fab);
         fabSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -146,8 +144,38 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
 
         fabLocation = (FloatingActionButton) findViewById(R.id.fab_location);
 
+        fields = new EditText[]{name, building, floor, wing, mac, lat, lon};
+        assignTextWatchers(fields);
     }
 
+    private void assignTextWatchers(EditText[] fields) {
+        textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (getCurrentFocus() != null &&
+                        getCurrentFocus().getClass() == AppCompatEditText.class) {
+                    fabSave.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.cardview_light_background));
+                    fabSave.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.colorPrimary));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+        };
+
+        for (EditText a : fields) {
+            a.addTextChangedListener(textWatcher);
+        }
+
+    }
     private boolean pushDataToFirebase(String id) {
         Map<String, Object> values = new HashMap<String, Object>();
         DatabaseReference fu = mDatabase.child(id);
@@ -283,6 +311,8 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             fabLocation.setColorFilter(ContextCompat.getColor(this, R.color.cardview_light_background));
             fabLocation.setBackgroundTintList(ContextCompat.getColorStateList(this,R.color.colorPrimary));
+            fabSave.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.cardview_light_background));
+            fabSave.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.colorPrimary));
         }
     }
 
