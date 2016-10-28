@@ -217,7 +217,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         lon.setText(String.valueOf(pLatLng.longitude));
         //zoom map and add marker
         if (mGoogleMap != null) {
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pLatLng, Float.parseFloat(getResources().getString(R.string.map_zoom))));
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pLatLng, mGoogleMap.getCameraPosition().zoom));
             mGoogleMap.clear(); //clear any existing markers
             Marker mMarker = mGoogleMap.addMarker(new MarkerOptions().position(pLatLng).title(name.getText().toString()).draggable(true));
             //mMarker.showInfoWindow();
@@ -359,6 +359,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         mGoogleMap = googleMap;
         mGoogleMap.setOnMarkerDragListener(this);
         LatLng mLatLng = new LatLng(Double.parseDouble(lat.getText().toString()), Double.parseDouble(lon.getText().toString()));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, Float.parseFloat(getResources().getString(R.string.map_zoom))));
         updateLocation(mLatLng);
     }
 
