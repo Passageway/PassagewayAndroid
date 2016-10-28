@@ -202,43 +202,48 @@
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:src="@drawable/ic_save_black_24dp"
-        android:tint="@color/colorPrimary"
-        app:backgroundTint="@color/cardview_light_background"
-        app:borderWidth="0dp"
-        android:layout_marginRight="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
-        app:layout_anchor="@id/config_card"
-        app:layout_anchorGravity="bottom|right|end" />
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:src="@drawable/ic_save_black_24dp"
+            android:tint="@color/colorAccent"
+            app:backgroundTint="@color/cardview_light_background"
+            app:borderWidth="0dp"
+            android:layout_margin="16dp"
+            app:layout_anchor="@id/config_card"
+            app:layout_anchorGravity="bottom|right|end" />
 
-    <com.dmitrymalkovich.android.ProgressFloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_anchor="@id/fab"
-        app:layout_anchorGravity="center"
-        android:paddingBottom="20dp"
-        app:borderWidth="0dp"
-        android:clickable="true">
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
             android:clickable="true"
             android:src="@drawable/ic_my_location_black_24dp"
-            android:tint="@color/colorPrimary"
+            android:tint="@color/colorAccent"
             app:backgroundTint="@color/cardview_light_background"
-            />
+            app:borderWidth="0dp"
+            android:layout_marginBottom="88dp"
+            android:layout_marginEnd="16dp"
+            app:layout_anchor="@id/fab"
+            app:layout_anchorGravity="top" />
+
         <ProgressBar
-            style="@style/Widget.AppCompat.ProgressBar"
-            android:visibility="invisible"
             android:id="@+id/location_loading"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </com.dmitrymalkovich.android.ProgressFloatingActionButton>
-
+            android:layout_height="wrap_content"
+            android:indeterminateOnly = "true"
+            android:visibility="invisible"
+            android:minHeight="75dp"
+            android:maxHeight="75dp"
+            android:minWidth="75dp"
+            android:maxWidth="75dp"
+            android:indeterminateBehavior="repeat"
+            android:indeterminateDuration="3500"
+            android:mirrorForRtl="false"
+            app:layout_anchor="@id/fab_location"
+            app:layout_anchorGravity="center"
+            />
 
 </android.support.design.widget.CoordinatorLayout>
