@@ -8,6 +8,7 @@
     style="@style/AppTheme">
 
     <LinearLayout
+        android:id="@+id/linear"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -209,23 +210,35 @@
         android:tint="@color/cardview_light_background"
         app:backgroundTint="@color/colorPrimary"
         app:borderWidth="0dp"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginTop="12dp"
         app:layout_anchor="@id/config_card"
         app:layout_anchorGravity="bottom|right|end" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_location"
+    <com.dmitrymalkovich.android.ProgressFloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
-        android:clickable="true"
-        android:src="@drawable/ic_my_location_black_24dp"
-        android:tint="@color/colorPrimary"
-        app:backgroundTint="@color/cardview_light_background"
-        app:borderWidth="0dp"
-        android:layout_marginBottom="88dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="72dp"
         app:layout_anchor="@id/fab"
-        app:layout_anchorGravity="top" />
+        app:layout_anchorGravity="top|center_horizontal"
+        app:borderWidth="0dp"
+        android:clickable="true">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:src="@drawable/ic_my_location_black_24dp"
+            android:tint="@color/colorPrimary"
+            app:backgroundTint="@color/cardview_light_background"
+            />
+        <ProgressBar
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:visibility="invisible"
+            android:id="@+id/location_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </com.dmitrymalkovich.android.ProgressFloatingActionButton>
+
 
 </android.support.design.widget.CoordinatorLayout>

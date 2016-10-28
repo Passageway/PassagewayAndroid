@@ -11,10 +11,12 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -52,6 +54,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerDragListener {
 
     private final int REQUEST_CHECK_SETTINGS = 9001;
+    private int mLocationCount;
 
     private FieldUnit unit;
     //private Location mLastLocation;
@@ -67,6 +70,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     private EditText ip;
     private EditText lat;
     private EditText lon;
+    private ProgressBar mProgressBar;
     private RadioGroup dirGroup;
     private DatabaseReference mDatabase;
 
@@ -74,6 +78,8 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unit_editor);
+
+        mLocationCount = 0;
 
         name = (EditText) findViewById(R.id.input_name);
         building = (EditText) findViewById(R.id.input_building);
@@ -83,6 +89,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         ip = (EditText) findViewById(R.id.input_ip);
         lat = (EditText) findViewById(R.id.input_lat);
         lon = (EditText) findViewById(R.id.input_long);
+        mProgressBar = (ProgressBar) findViewById(R.id.location_loading);
         dirGroup = (RadioGroup) findViewById(R.id.radioGroup);
 
         MapFragment mMapFragment = MapFragment.newInstance();
@@ -257,15 +264,27 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
+
+    @Override
     public void onLocationChanged(Location location) {
         //Log.d("Permission","Lat: " + String.valueOf(location.getLatitude()));
         //Log.d("Permission","Lon: " + String.valueOf(location.getLongitude()));
-        if(location.getAccuracy() < 10) {
+        Log.d("Accuracy",""+location.getAccuracy());
+        mLocationCount++;
+        if(location.getAccuracy() < mLocationCount*2) {
             LatLng mLatLng = new LatLng(location.getLatitude(), location.getLongitude());
             updateLocation(mLatLng);
+            mProgressBar.setVisibility(View.INVISIBLE);
+            mLocationCount = 0;
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            fabLocation.setColorFilter(ContextCompat.getColor(this, R.color.cardview_light_background));
+            fabLocation.setBackgroundTintList(ContextCompat.getColorStateList(this,R.color.colorPrimary));
         }
-        }
+    }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -289,7 +308,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
                 mLocationRequest.setInterval(500);
                 mLocationRequest.setFastestInterval(100);
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, DetailActivity.this);
-
+                mProgressBar.setVisibility(View.VISIBLE);
                 turnOnLocation();
             }
         });

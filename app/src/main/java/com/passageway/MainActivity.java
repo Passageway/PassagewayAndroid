@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,11 +31,13 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private ArrayList<FieldUnit> mUnits;
     private RecAdapter mAdapter;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mProgressBar = (ProgressBar) findViewById(R.id.units_loading);
         mAuth = FirebaseAuth.getInstance();
         mUnits = new ArrayList<>();
     }
@@ -63,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     }));
+
+        mProgressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -84,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 // This method is called once with the initial value(s) and again
                                 // whenever data at this location is updated.
+                                mProgressBar.setVisibility(View.VISIBLE);
                                 mUnits.clear();
 
                                 Map<String, Object> units = (Map<String, Object>) dataSnapshot.getValue();
