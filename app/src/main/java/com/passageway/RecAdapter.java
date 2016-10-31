@@ -79,7 +79,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.ViewHolder> {
         unit = mUnits.get(position);
 
         holder.unitName.setText(unit.getName());
-        holder.mac.setText(unit.getCid());
+        holder.mac.setText(Utils.formatMAC(unit.getCid()));
         holder.ip.setText(unit.getIp());
         if (unit.getLat() == 0.0 && unit.getLon() == 0.0)
             holder.status.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.colorOffline));

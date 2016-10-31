@@ -96,9 +96,8 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d("units", units.toString());
                                 for (Map.Entry<String, Object> unit : units.entrySet()) {
                                     Map<String, Object> attributes = (Map<String, Object>) unit.getValue();
-                                    mUnits.add(new FieldUnit(unit.getKey(),
-                                            attributes.get("building").toString(),
-                                            Utils.formatMAC(attributes.get("cid").toString()),
+                                    mUnits.add(new FieldUnit(attributes.get("building").toString(),
+                                            unit.getKey(),     //cid is now going to be the key of the units
                                             attributes.get("ip").toString(),
                                             (int) (long) attributes.get("direction"),
                                             (int) (long) attributes.get("floor"),

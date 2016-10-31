@@ -137,7 +137,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         fabSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pushDataToFirebase(unit.getKey());
+                pushDataToFirebase(unit.getCid());
                 Snackbar.make(view, "Attributes saved to Firebase", Snackbar.LENGTH_LONG).show();
             }
         });
@@ -206,7 +206,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         building.setText(unit.getBuilding());
         floor.setText(Integer.toString(unit.getFloor()));
         wing.setText(unit.getWing());
-        mac.setText(unit.getCid());
+        mac.setText(Utils.formatMAC(unit.getCid()));
         ip.setText(unit.getIp());
         lat.setText(Double.toString(unit.getLat()));
         lon.setText(Double.toString(unit.getLon()));

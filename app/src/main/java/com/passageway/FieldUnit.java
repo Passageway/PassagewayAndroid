@@ -16,10 +16,8 @@ public class FieldUnit implements Serializable {
     private double lon;
     private String name;
     private String wing;
-    private String key;
 
-    public FieldUnit(String key, String building, String cid, String ip, int direction, int floor, double lat, double lon, String name, String wing) {
-        this.key = key;
+    public FieldUnit(String building, String cid, String ip, int direction, int floor, double lat, double lon, String name, String wing) {
         this.building = building;
         this.cid = cid;
         this.ip = ip;
@@ -29,15 +27,6 @@ public class FieldUnit implements Serializable {
         this.lon = lon;
         this.name = name;
         this.wing = wing;
-    }
-
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
     public String getWing() {
