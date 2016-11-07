@@ -3,6 +3,7 @@ package com.passageway;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -74,57 +75,72 @@ public class MainActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
-        mAuth.signInAnonymously()
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+        signInToFirebase();
+    }
 
-                        //login success
-                        Log.d("auth", "signInAnonymously:onComplete:" + task.isSuccessful());
-                        mDatabase = FirebaseDatabase.getInstance().getReference("units");
+    public void signInToFirebase() {
+        if (Utils.isOnline(getApplicationContext())) {
+            mAuth.signInAnonymously()
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
 
-                        // Read from the database
-                        mDatabase.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                // This method is called once with the initial value(s) and again
-                                // whenever data at this location is updated.
-                                mProgressBar.setVisibility(View.VISIBLE);
-                                mUnits.clear();
+                            //login success
+                            Log.d("auth", "signInAnonymously:onComplete:" + task.isSuccessful());
+                            mDatabase = FirebaseDatabase.getInstance().getReference("units");
 
-                                Map<String, Object> units = (Map<String, Object>) dataSnapshot.getValue();
-                                Log.d("units", units.toString());
-                                for (Map.Entry<String, Object> unit : units.entrySet()) {
-                                    Map<String, Object> attributes = (Map<String, Object>) unit.getValue();
-                                    mUnits.add(new FieldUnit(attributes.get("building").toString(),
-                                            unit.getKey(),     //cid is now going to be the key of the units
-                                            attributes.get("ip").toString(),
-                                            (int) (long) attributes.get("direction"),
-                                            (int) (long) attributes.get("floor"),
-                                            Double.parseDouble(attributes.get("lat").toString()),
-                                            Double.parseDouble(attributes.get("lon").toString()),
-                                            attributes.get("name").toString(),
-                                            attributes.get("wing").toString()));
+                            // Read from the database
+                            mDatabase.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    // This method is called once with the initial value(s) and again
+                                    // whenever data at this location is updated.
+                                    mProgressBar.setVisibility(View.VISIBLE);
+                                    mUnits.clear();
+
+                                    Map<String, Object> units = (Map<String, Object>) dataSnapshot.getValue();
+                                    Log.d("units", units.toString());
+                                    for (Map.Entry<String, Object> unit : units.entrySet()) {
+                                        Map<String, Object> attributes = (Map<String, Object>) unit.getValue();
+                                        mUnits.add(new FieldUnit(attributes.get("building").toString(),
+                                                unit.getKey(),     //cid is now going to be the key of the units
+                                                attributes.get("ip").toString(),
+                                                (int) (long) attributes.get("direction"),
+                                                (int) (long) attributes.get("floor"),
+                                                Double.parseDouble(attributes.get("lat").toString()),
+                                                Double.parseDouble(attributes.get("lon").toString()),
+                                                attributes.get("name").toString(),
+                                                attributes.get("wing").toString()));
+                                    }
+                                    Log.d("data", "Value: " + mUnits.get(0).getName() + " " + mUnits.get(0).getBuilding() + " " + mUnits.get(0).getDirection() + " " + mUnits.get(0).getLat());
+                                    createRecyclerView();
                                 }
-                                Log.d("data", "Value: " + mUnits.get(0).getName() + " " + mUnits.get(0).getBuilding() + " " + mUnits.get(0).getDirection() + " " + mUnits.get(0).getLat());
-                                createRecyclerView();
-                            }
-                            // Data listener cancelled
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                // Failed to read value
-                                Log.w("data", "Failed to read value.", error.toException());
-                            }
-                        });
 
-                        //login failure
-                        if (!task.isSuccessful()) {
-                            Log.w("auth", "signInAnonymously", task.getException());
-                            Toast.makeText(MainActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                                // Data listener cancelled
+                                @Override
+                                public void onCancelled(DatabaseError error) {
+                                    // Failed to read value
+                                    Log.w("data", "Failed to read value.", error.toException());
+                                }
+                            });
+
+                            //login failure
+                            if (!task.isSuccessful()) {
+                                Log.w("auth", "signInAnonymously", task.getException());
+                                Toast.makeText(MainActivity.this, "Authentication failed.",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
+        } else {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            Snackbar.make(findViewById(R.id.activity_main), "No Internet Connection", Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    signInToFirebase();
+                }
+            }).show();
+        }
     }
 
     public void configureIntent(FieldUnit unit) {
