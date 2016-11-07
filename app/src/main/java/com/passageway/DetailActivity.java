@@ -137,8 +137,13 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         fabSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pushDataToFirebase(unit.getCid());
-                Snackbar.make(view, "Attributes saved to Firebase", Snackbar.LENGTH_LONG).show();
+                if (fabSave.getBackgroundTintList() ==
+                        ContextCompat.getColorStateList(getApplicationContext(), R.color.colorAccent)) {
+                    pushDataToFirebase(unit.getCid());
+                    Snackbar.make(view, "Attributes saved to Firebase", Snackbar.LENGTH_LONG).show();
+                } else {
+                    Snackbar.make(view, "Nothing to save", Snackbar.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -377,5 +382,7 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     public void onMarkerDragEnd(Marker marker) {
         Log.d("Drag", "Drag End");
         updateLocation(marker.getPosition());
+        fabLocation.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
+        fabLocation.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.cardview_light_background));
     }
 }

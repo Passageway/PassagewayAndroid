@@ -1,15 +1,15 @@
 package com.passageway;
 
-/**
- * Created by Jaxon on 10/24/2016.
- */
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
-public class Utils {
+class Utils {
 
     private Utils() {
     }
 
-    public static String formatMAC(String pMac) {
+    static String formatMAC(String pMac) {
         String upper = pMac.substring(2).toUpperCase();
         String ret = "";
         for (int i = 0; i < upper.length(); i++) {
@@ -19,5 +19,12 @@ public class Utils {
             }
         }
         return ret;
+    }
+
+    static boolean isOnline(Context context) {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
     }
 }
