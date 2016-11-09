@@ -69,7 +69,6 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     private ProgressBar mProgressBar;
     private RadioGroup dirGroup;
     private DatabaseReference mDatabase;
-    private EditText[] fields;
     private TextWatcher textWatcher;
 
     @Override
@@ -106,6 +105,13 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
             @Override
             public void onPermissionDenied(PermissionDeniedResponse response) {
                 Log.d("Permission", "Permission Denied");
+                mProgressBar.setVisibility(View.INVISIBLE);
+                //TODO: have option to go to settings
+                if(response.isPermanentlyDenied()) {
+                    Snackbar.make(findViewById(R.id.coordinator), "Location Unavailable. Please check app permissions", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    Snackbar.make(findViewById(R.id.coordinator), "Location Unavailable. Permission needed for location", Snackbar.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -149,11 +155,13 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
 
         fabLocation = (FloatingActionButton) findViewById(R.id.fab_location);
 
-        fields = new EditText[]{name, building, floor, wing, mac, lat, lon};
-        assignTextWatchers(fields);
+        EditText [] fieldsSave = new EditText[]{name, building, floor, wing, mac, lat, lon};
+        EditText [] fieldsLatLng = new EditText[]{lat, lon};
+        assignTextWatchersSave(fieldsSave, fabSave);
+        assignTextWatchersLocation(fieldsLatLng, fabLocation);
     }
 
-    private void assignTextWatchers(EditText[] fields) {
+    private void assignTextWatchersSave(EditText[] fields, final FloatingActionButton fab) {
         textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -164,8 +172,36 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (getCurrentFocus() != null &&
                         getCurrentFocus().getClass() == AppCompatEditText.class) {
-                    fabSave.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.cardview_light_background));
-                    fabSave.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.colorAccent));
+                    fab.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.cardview_light_background));
+                    fab.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.colorAccent));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+        };
+
+        for (EditText a : fields) {
+            a.addTextChangedListener(textWatcher);
+        }
+
+    }
+    private void assignTextWatchersLocation(EditText[] fields, final FloatingActionButton fab) {
+        textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (getCurrentFocus() != null &&
+                        getCurrentFocus().getClass() == AppCompatEditText.class) {
+                    fab.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+                    fab.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.cardview_light_background));
                 }
             }
 
@@ -197,6 +233,10 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
         else
             values.put("direction", 1);
         fu.updateChildren(values);
+
+        fabSave.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
+        fabSave.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.cardview_light_background));
+
         return true;
     }
 
@@ -285,6 +325,8 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
                     case RESULT_CANCELED:
                     {
                         // The user was asked to change settings, but chose not to. Location not enabled by user
+                        Snackbar.make(findViewById(R.id.coordinator),"Location Unavailable. Please turn on device location setting", Snackbar.LENGTH_SHORT).show();
+                        mProgressBar.setVisibility(View.INVISIBLE);
                         break;
                     }
                     default:
@@ -343,8 +385,8 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
                 mLocationRequest.setInterval(500);
                 mLocationRequest.setFastestInterval(100);
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, DetailActivity.this);
-                mProgressBar.setVisibility(View.VISIBLE);
                 turnOnLocation();
+                mProgressBar.setVisibility(View.VISIBLE);
             }
         });
     }
