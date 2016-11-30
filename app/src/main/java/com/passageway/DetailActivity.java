@@ -424,7 +424,11 @@ public class DetailActivity extends AppCompatActivity implements GoogleApiClient
     public void onMarkerDragEnd(Marker marker) {
         Log.d("Drag", "Drag End");
         updateLocation(marker.getPosition());
+
         fabLocation.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
         fabLocation.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.cardview_light_background));
+
+        fabSave.setColorFilter(ContextCompat.getColor(this, R.color.cardview_light_background));
+        fabSave.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorAccent));
     }
 }
